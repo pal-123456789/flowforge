@@ -71,6 +71,15 @@ export function LandingNav({ onCommand }: { onCommand: () => void }) {
         </div>
 
         <div className="flex items-center gap-2">
+          <a
+            href="https://github.com/pal-123456789/flowforge"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="View source on GitHub"
+            className="hidden h-9 w-9 items-center justify-center rounded-lg border border-line bg-bg-panel/60 text-ink-dim transition-colors hover:border-line-bright hover:text-ink sm:flex"
+          >
+            <Github size={16} />
+          </a>
           <button
             onClick={onCommand}
             className="hidden items-center gap-2 rounded-lg border border-line bg-bg-panel/60 px-3 py-2 text-xs text-ink-dim transition-colors hover:border-line-bright hover:text-ink-soft sm:flex"
@@ -84,7 +93,7 @@ export function LandingNav({ onCommand }: { onCommand: () => void }) {
           <Magnetic strength={0.4}>
             <Link
               href="/editor"
-              className="flex items-center gap-2 rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white shadow-glow transition-colors hover:bg-brand-soft"
+              className="sheen flex items-center gap-2 rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white shadow-glow transition-colors hover:bg-brand-soft"
             >
               <Plus size={16} /> New workflow
             </Link>
@@ -169,7 +178,7 @@ export function Hero({ nodeCount }: { nodeCount: number }) {
             <Magnetic strength={0.3}>
               <Link
                 href="/editor"
-                className="group flex items-center gap-2 rounded-xl bg-brand px-6 py-3.5 font-semibold text-white shadow-glow-lg transition-all hover:bg-brand-soft"
+                className="sheen group flex items-center gap-2 rounded-xl bg-brand px-6 py-3.5 font-semibold text-white shadow-glow-lg transition-all hover:bg-brand-soft"
               >
                 <Sparkles size={18} />
                 Start building
@@ -203,7 +212,9 @@ export function Hero({ nodeCount }: { nodeCount: number }) {
               node-by-node execution
             </span>
             <a
-              href="https://github.com"
+              href="https://github.com/pal-123456789/flowforge"
+              target="_blank"
+              rel="noreferrer"
               className="flex items-center gap-1.5 transition-colors hover:text-ink-soft"
             >
               <Github size={13} /> ALGOTHON&apos;26 · ALG-AUTO-01

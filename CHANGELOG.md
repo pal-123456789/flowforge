@@ -2,6 +2,17 @@
 
 All notable changes to FlowForge. This project targets ALGOTHON'26 (`ALG-AUTO-01`).
 
+## [1.5.0] — Landing polish & correct links
+
+### Added
+- A subtle sweeping **sheen** animation on primary call-to-action buttons (hero, nav, CTA).
+- A **GitHub** icon-link in the landing navigation and a **Source** button in the final CTA.
+
+### Fixed
+- All landing GitHub links now point to the real repository
+  (`github.com/pal-123456789/flowforge`) and open in a new tab, instead of the generic
+  `github.com` homepage.
+
 ## [1.4.0] — More ready-to-run templates
 
 ### Added

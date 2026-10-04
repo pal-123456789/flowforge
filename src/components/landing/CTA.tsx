@@ -59,7 +59,7 @@ export function CTA() {
               <Magnetic strength={0.3}>
                 <Link
                   href="/editor"
-                  className="group flex items-center gap-2 rounded-xl bg-brand px-7 py-4 text-base font-semibold text-white shadow-glow-lg transition-all hover:bg-brand-soft"
+                  className="sheen group flex items-center gap-2 rounded-xl bg-brand px-7 py-4 text-base font-semibold text-white shadow-glow-lg transition-all hover:bg-brand-soft"
                 >
                   Open the editor
                   <ArrowRight
@@ -74,6 +74,14 @@ export function CTA() {
               >
                 View analytics
               </Link>
+              <a
+                href="https://github.com/pal-123456789/flowforge"
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-2 rounded-xl border border-line bg-bg-panel/50 px-7 py-4 text-base font-medium text-ink-soft backdrop-blur transition-colors hover:text-ink"
+              >
+                <Github size={17} /> Source
+              </a>
             </div>
           </Reveal>
         </div>
@@ -152,7 +160,9 @@ export function LandingFooter() {
           <span className="flex items-center gap-4">
             <span>Next.js · React Flow · Three.js · Framer Motion</span>
             <a
-              href="https://github.com"
+              href="https://github.com/pal-123456789/flowforge"
+              target="_blank"
+              rel="noreferrer"
               className="flex items-center gap-1.5 transition-colors hover:text-ink-soft"
             >
               <Github size={13} /> Source

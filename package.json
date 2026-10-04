@@ -1,6 +1,6 @@
 {
   "name": "flowforge",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "description": "FlowForge — a visual workflow automation platform built for ALGOTHON'26 (ALG-AUTO-01).",
   "scripts": {

@@ -18,6 +18,7 @@ import {
   LayoutTemplate,
   BarChart3,
   Home,
+  History,
   CornerDownLeft,
   ArrowUp,
   ArrowDown,
@@ -95,6 +96,15 @@ export function CommandPaletteProvider({
         icon: <BarChart3 size={16} />,
         keywords: "charts stats metrics runs",
         run: () => router.push("/analytics"),
+      },
+      {
+        id: "nav-runs",
+        title: "Open Run History",
+        subtitle: "Browse & inspect every execution",
+        group: "Navigation",
+        icon: <History size={16} />,
+        keywords: "runs history executions logs timeline",
+        run: () => router.push("/runs"),
       },
       {
         id: "nav-templates",

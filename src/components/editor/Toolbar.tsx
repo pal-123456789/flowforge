@@ -77,6 +77,15 @@ export function Toolbar() {
           onLog: (l) => useEditorStore.getState().appendLog(l),
           onDone: (record) => {
             useEditorStore.getState().setLastRun(record);
+            // persist the run so it appears in run history + analytics
+            // (skipped automatically for unsaved/inline workflows)
+            if (record.workflowId && record.workflowId !== "inline") {
+              fetch("/api/runs", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ run: record }),
+              }).catch(() => {});
+            }
           },
         }
       );

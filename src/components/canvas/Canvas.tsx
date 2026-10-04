@@ -13,6 +13,7 @@ import ReactFlow, {
 } from "reactflow";
 import FlowNode from "./FlowNode";
 import { useEditorStore } from "@/store/editorStore";
+import { recordRecentNode } from "./NodePalette";
 import { CATEGORY_HEX, getNodeDef } from "@/lib/nodeRegistry";
 
 const nodeTypes: NodeTypes = { flowNode: FlowNode };
@@ -36,6 +37,7 @@ function CanvasInner() {
       const type = e.dataTransfer.getData("application/flowforge-node");
       if (!type) return;
       const position = screenToFlowPosition({ x: e.clientX, y: e.clientY });
+      recordRecentNode(type);
       addNodeOfType(type, position);
     },
     [screenToFlowPosition, addNodeOfType]

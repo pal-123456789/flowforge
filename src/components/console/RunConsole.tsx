@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
 import { useEditorStore } from "@/store/editorStore";
 import { fmtDuration, fmtTime, cn } from "@/lib/utils";
 import { JsonView } from "@/components/ui/JsonView";
@@ -108,6 +109,15 @@ export function RunConsole({
                 {lastRun.successCount} ok · {lastRun.errorCount} err
               </span>
               <span>{fmtDuration(lastRun.durationMs)}</span>
+              {lastRun.workflowId && lastRun.workflowId !== "inline" && (
+                <Link
+                  href={`/runs/${lastRun.id}`}
+                  className="flex items-center gap-1 rounded border border-line px-1.5 py-0.5 text-[11px] text-ink-soft transition-colors hover:border-brand/50 hover:text-ink"
+                  title="Open full run detail"
+                >
+                  <ListTree size={11} /> Detail
+                </Link>
+              )}
             </span>
           )}
           <button

@@ -158,17 +158,18 @@ export function Workspace({
               </p>
             </div>
             <Link
-              href="/analytics"
+              href="/runs"
               className="flex items-center gap-1.5 text-sm font-medium text-brand-soft transition-colors hover:text-brand"
             >
-              View analytics <ArrowRight size={15} />
+              View all runs <ArrowRight size={15} />
             </Link>
           </div>
           <Reveal>
             <div className="overflow-hidden rounded-2xl border border-line">
               {runs.slice(0, 8).map((r, i) => (
-                <div
+                <Link
                   key={r.id}
+                  href={`/runs/${r.id}`}
                   className={cn(
                     "flex items-center gap-4 px-4 py-3 text-sm transition-colors hover:bg-bg-panel/50",
                     i % 2 ? "bg-bg-soft/40" : "bg-transparent"
@@ -194,7 +195,7 @@ export function Workspace({
                   <span className="w-20 text-right text-xs tabular-nums text-ink-dim">
                     {fmtRelative(new Date(r.startedAt).toISOString())}
                   </span>
-                </div>
+                </Link>
               ))}
             </div>
           </Reveal>

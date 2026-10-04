@@ -85,7 +85,9 @@ FlowForge is intentionally deep. Here are the headline capabilities; the full in
 - **Inspector forms** — every node renders a typed config form: text, number, select, boolean, textarea, JSON, code, and key/value editors, with conditional `showIf` fields. Includes **Run from here** to execute the selected node and everything downstream of it.
 - **Live validation panel** — a floating badge continuously analyzes the graph and lists every error/warning (empty graph, missing trigger, orphaned nodes, cycles). Click an issue to jump straight to the offending node.
 - **Undo / redo** — a 50-step history stack for every structural edit.
-- **Duplicate, delete, multi-select** — full keyboard-driven editing.
+- **Copy / cut / paste & duplicate** — full keyboard-driven node editing (`Ctrl+C/X/V/D`) with an in-session clipboard.
+- **Auto-layout** — one click (`Ctrl+L`) tidies the entire graph with a layered DAG algorithm (longest-path layering + barycenter crossing reduction).
+- **Version snapshots** — capture named local checkpoints of a workflow and restore any of them instantly, with one-click undo. Entirely offline (`localStorage`).
 - **Workspace management** — hover any workflow card to **duplicate** (deep-copy) or **rename** it inline.
 - **Light & dark themes** — toggle from the toolbar or command palette; the choice persists and applies before first paint. Every surface, including the canvas, adapts.
 - **First-run onboarding tour** — a concise five-step walkthrough for new users (shown once per browser).
@@ -111,7 +113,7 @@ FlowForge is intentionally deep. Here are the headline capabilities; the full in
 - **Webhook triggers** — every saved workflow gets a live `POST /api/webhook/[id]` endpoint that executes it with the request body as input.
 - **Import / export** — download any workflow as portable `*.flowforge.json`; re-import with schema validation.
 - **One-click templates** — seed-ready starter workflows you can open and run instantly.
-- **Command palette (⌘K / Ctrl+K)** — fuzzy-search to navigate, create workflows, open analytics or run history, toggle the light/dark theme, or deep-link **any node type** straight onto a fresh canvas.
+- **Command palette (⌘K / Ctrl+K)** — fuzzy-search to navigate, create workflows, open analytics or run history, toggle the light/dark theme, auto-layout the graph, open version snapshots, or deep-link **any node type** straight onto a fresh canvas.
 
 ### Presentation
 - **Cinematic 3D landing page** — a scroll-driven marketing experience with a WebGL node-constellation hero (Three.js via @react-three/fiber), aurora backgrounds, scroll reveals, count-up metrics, and an auto-playing live-engine demo.
@@ -306,6 +308,8 @@ If unset, the AI node automatically uses its deterministic offline implementatio
 | `Ctrl+Z` | Undo |
 | `Ctrl+Shift+Z` / `Ctrl+Y` | Redo |
 | `Ctrl+D` | Duplicate selected node |
+| `Ctrl+C` / `Ctrl+X` / `Ctrl+V` | Copy / cut / paste node |
+| `Ctrl+L` | Auto-layout (tidy) the graph |
 | `Delete` / `Backspace` | Delete selected node |
 | Double-click canvas | Quick-add a node at the cursor |
 | `?` | Toggle the shortcuts overlay |

@@ -19,9 +19,14 @@ import type {
   LogEntry,
 } from "@/lib/types";
 import { makeNode } from "@/lib/templates";
+import { autoLayoutNodes } from "@/lib/layout";
 import { nanoid } from "nanoid";
 
 type RFNode = FlowNode & { selected?: boolean };
+
+/** In-memory clipboard for copy/cut/paste of a single node (survives across
+ *  editor instances within the same tab session). */
+let nodeClipboard: FlowNode | null = null;
 
 interface HistoryState {
   nodes: FlowNode[];
@@ -68,6 +73,14 @@ interface EditorState {
   deleteNode: (id: string) => void;
   duplicateNode: (id: string) => void;
   selectNode: (id: string | null) => void;
+
+  // bulk / layout / clipboard
+  applyLayout: () => void;
+  copyNode: (id: string) => boolean;
+  cutNode: (id: string) => boolean;
+  pasteClipboard: () => void;
+  hasClipboard: () => boolean;
+  restoreGraph: (nodes: FlowNode[], edges: FlowEdge[]) => void;
 
   undo: () => void;
   redo: () => void;
@@ -236,6 +249,75 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   },
 
   selectNode: (id) => set({ selectedNodeId: id }),
+
+  applyLayout: () => {
+    get().pushHistory();
+    const laid = autoLayoutNodes(
+      get().nodes as FlowNode[],
+      get().edges as FlowEdge[]
+    );
+    // preserve selection flag
+    const selFlags = new Map(get().nodes.map((n) => [n.id, n.selected]));
+    set({
+      nodes: laid.map((n) => ({
+        ...(n as RFNode),
+        selected: selFlags.get(n.id),
+      })),
+      dirty: true,
+    });
+  },
+
+  copyNode: (id) => {
+    const node = get().nodes.find((n) => n.id === id);
+    if (!node) return false;
+    nodeClipboard = JSON.parse(
+      JSON.stringify({
+        id: node.id,
+        type: "flowNode",
+        position: node.position,
+        data: node.data,
+      })
+    );
+    return true;
+  },
+
+  cutNode: (id) => {
+    const ok = get().copyNode(id);
+    if (ok) get().deleteNode(id);
+    return ok;
+  },
+
+  hasClipboard: () => nodeClipboard !== null,
+
+  pasteClipboard: () => {
+    if (!nodeClipboard) return;
+    get().pushHistory();
+    const copy: RFNode = {
+      ...(JSON.parse(JSON.stringify(nodeClipboard)) as FlowNode),
+      id: `n_${nanoid(6)}`,
+      position: {
+        x: nodeClipboard.position.x + 48,
+        y: nodeClipboard.position.y + 48,
+      },
+      selected: false,
+    };
+    set({
+      nodes: [...get().nodes, copy],
+      selectedNodeId: copy.id,
+      dirty: true,
+    });
+  },
+
+  restoreGraph: (nodes, edges) => {
+    get().pushHistory();
+    set({
+      nodes: JSON.parse(JSON.stringify(nodes)) as RFNode[],
+      edges: JSON.parse(JSON.stringify(edges)) as FlowEdge[],
+      selectedNodeId: null,
+      dirty: true,
+      nodeStatus: {},
+    });
+  },
 
   pushHistory: () => {
     const { nodes, edges, past } = get();

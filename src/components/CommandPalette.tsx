@@ -25,6 +25,8 @@ import {
   Boxes,
   Sun,
   Moon,
+  LayoutGrid,
+  GitBranch,
 } from "lucide-react";
 import { NODE_TYPES, CATEGORY_HEX } from "@/lib/nodeRegistry";
 import { Icon } from "@/components/ui/Icon";
@@ -100,6 +102,25 @@ export function CommandPaletteProvider({
         icon: theme === "light" ? <Moon size={16} /> : <Sun size={16} />,
         keywords: "theme dark light mode appearance color scheme toggle",
         run: () => toggleTheme(),
+      },
+      {
+        id: "editor-layout",
+        title: "Auto-layout graph",
+        subtitle: "Tidy nodes left → right",
+        group: "Actions",
+        icon: <LayoutGrid size={16} />,
+        keywords: "layout tidy arrange align organize auto format graph",
+        run: () => window.dispatchEvent(new CustomEvent("flowforge:layout-cmd")),
+      },
+      {
+        id: "editor-snapshots",
+        title: "Version snapshots",
+        subtitle: "Capture or restore a saved state",
+        group: "Actions",
+        icon: <GitBranch size={16} />,
+        keywords: "snapshot version history restore capture backup checkpoint",
+        run: () =>
+          window.dispatchEvent(new CustomEvent("flowforge:open-snapshots")),
       },
       {
         id: "nav-analytics",

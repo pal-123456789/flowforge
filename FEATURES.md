@@ -43,7 +43,11 @@ ships in the codebase and runs offline.
 ## 5. Editing & history
 
 - Undo / redo with a 50-step bounded history stack.
-- Duplicate selected node (`Ctrl+D`).
+- Duplicate selected node (`Ctrl+D`); copy / cut / paste nodes (`Ctrl+C` / `Ctrl+X` / `Ctrl+V`).
+- **Auto-layout** (`Ctrl+L`) — a layered DAG algorithm (longest-path layering + barycenter crossing
+  reduction) tidies the whole graph left → right; grid fallback for cyclic graphs.
+- **Version snapshots** — capture named local checkpoints and restore any of them instantly, with
+  one-click undo; stored per-workflow in `localStorage` (offline, max 25).
 - Delete selected node (`Delete` / `Backspace`).
 - Dirty-state indicator; save with `Ctrl+S`.
 - Import a `*.flowforge.json` file (schema-validated); export the current workflow to one.

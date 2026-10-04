@@ -12,6 +12,7 @@ import { ShortcutsHelp } from "@/components/editor/ShortcutsHelp";
 import { ValidationPanel } from "@/components/editor/ValidationPanel";
 import { RunProgressBar } from "@/components/editor/RunProgressBar";
 import { OnboardingTour } from "@/components/editor/OnboardingTour";
+import { SnapshotPanel } from "@/components/editor/SnapshotPanel";
 import { FullscreenLoader } from "@/components/ui/Loader3D";
 import { emptyWorkflow } from "@/lib/templates";
 import type { Workflow } from "@/lib/types";
@@ -21,6 +22,7 @@ export function EditorShell({ workflowId }: { workflowId?: string }) {
   const [consoleOpen, setConsoleOpen] = useState(true);
   const [loaded, setLoaded] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
+  const [snapshotsOpen, setSnapshotsOpen] = useState(false);
   const searchParams = useSearchParams();
 
   useEffect(() => {
@@ -99,6 +101,25 @@ export function EditorShell({ workflowId }: { workflowId?: string }) {
       e.preventDefault();
       const sel = useEditorStore.getState().selectedNodeId;
       if (sel) useEditorStore.getState().duplicateNode(sel);
+    } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "l") {
+      // auto-layout the graph
+      e.preventDefault();
+      useEditorStore.getState().applyLayout();
+    } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "c") {
+      const sel = useEditorStore.getState().selectedNodeId;
+      if (sel && useEditorStore.getState().copyNode(sel)) {
+        e.preventDefault();
+      }
+    } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "x") {
+      const sel = useEditorStore.getState().selectedNodeId;
+      if (sel && useEditorStore.getState().cutNode(sel)) {
+        e.preventDefault();
+      }
+    } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "v") {
+      if (useEditorStore.getState().hasClipboard()) {
+        e.preventDefault();
+        useEditorStore.getState().pasteClipboard();
+      }
     } else if (e.key === "Delete" || e.key === "Backspace") {
       // delete selected node
       const sel = useEditorStore.getState().selectedNodeId;
@@ -113,6 +134,20 @@ export function EditorShell({ workflowId }: { workflowId?: string }) {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [onKey]);
+
+  // open the snapshots drawer from the toolbar / command palette
+  useEffect(() => {
+    const openSnap = () => setSnapshotsOpen(true);
+    const layoutCmd = () => {
+      useEditorStore.getState().applyLayout();
+    };
+    window.addEventListener("flowforge:open-snapshots", openSnap);
+    window.addEventListener("flowforge:layout-cmd", layoutCmd);
+    return () => {
+      window.removeEventListener("flowforge:open-snapshots", openSnap);
+      window.removeEventListener("flowforge:layout-cmd", layoutCmd);
+    };
+  }, []);
 
   // handle ?add=<type> deep-link from the command palette
   useEffect(() => {
@@ -160,6 +195,10 @@ export function EditorShell({ workflowId }: { workflowId?: string }) {
         <Inspector />
       </div>
       <ShortcutsHelp open={helpOpen} onClose={() => setHelpOpen(false)} />
+      <SnapshotPanel
+        open={snapshotsOpen}
+        onClose={() => setSnapshotsOpen(false)}
+      />
       <OnboardingTour />
     </div>
   );

@@ -2,6 +2,23 @@
 
 All notable changes to FlowForge. This project targets ALGOTHON'26 (`ALG-AUTO-01`).
 
+## [1.3.0] — Pro editor: layout, clipboard & versioning
+
+### Added
+- **Auto-layout ("Tidy graph")** — a from-scratch layered DAG layout (longest-path layering +
+  barycenter crossing reduction) arranges the whole graph left → right in one click (`Ctrl+L`,
+  toolbar button, or command palette). Falls back to a balanced grid for cyclic graphs.
+- **Copy / cut / paste nodes** — `Ctrl+C` / `Ctrl+X` / `Ctrl+V` with an in-session clipboard;
+  pasted nodes get fresh ids and a slight offset.
+- **Version snapshots** — a slide-in drawer to capture named, local checkpoints of a workflow and
+  restore any of them instantly (with one-click undo). Stored per-workflow in `localStorage`
+  (max 25), fully offline. Open from the toolbar or command palette.
+
+### Changed
+- Editor store gained `applyLayout`, `copyNode`, `cutNode`, `pasteClipboard`, `hasClipboard`, and
+  `restoreGraph` actions — all history-aware so every bulk change is undoable.
+- Shortcuts overlay and docs updated with the new hotkeys.
+
 ## [1.2.0] — Flow ergonomics & themeable UI
 
 ### Added

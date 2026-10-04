@@ -20,6 +20,8 @@ import {
   Upload,
   Sun,
   Moon,
+  LayoutGrid,
+  GitBranch,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -296,6 +298,25 @@ export function Toolbar() {
           title={theme === "light" ? "Switch to dark theme" : "Switch to light theme"}
         >
           {theme === "light" ? <Moon size={16} /> : <Sun size={16} />}
+        </IconBtn>
+
+        <IconBtn
+          onClick={() => {
+            useEditorStore.getState().applyLayout();
+            toast("success", "Graph tidied", "Nodes auto-arranged left → right");
+          }}
+          title="Auto-layout graph (Ctrl+L)"
+        >
+          <LayoutGrid size={16} />
+        </IconBtn>
+
+        <IconBtn
+          onClick={() =>
+            window.dispatchEvent(new CustomEvent("flowforge:open-snapshots"))
+          }
+          title="Version snapshots"
+        >
+          <GitBranch size={16} />
         </IconBtn>
 
         <IconBtn onClick={copyWebhook} title="Copy webhook URL">

@@ -320,8 +320,9 @@ export function AnalyticsDashboard() {
               ) : (
                 <div className="space-y-1">
                   {runs.slice(0, 9).map((r) => (
-                    <div
+                    <Link
                       key={r.id}
+                      href={`/runs/${r.id}`}
                       className="flex items-center gap-3 rounded-lg px-2 py-2 text-sm transition-colors hover:bg-bg-panel/60"
                     >
                       {r.status === "success" ? (
@@ -341,7 +342,7 @@ export function AnalyticsDashboard() {
                       <span className="w-16 text-right text-xs tabular-nums text-ink-faint">
                         {fmtRelative(new Date(r.startedAt).toISOString())}
                       </span>
-                    </div>
+                    </Link>
                   ))}
                 </div>
               )}

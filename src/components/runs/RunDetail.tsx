@@ -24,6 +24,7 @@ import {
   Terminal,
   Gauge,
   Hash,
+  Download,
 } from "lucide-react";
 
 const STATUS_META: Record<
@@ -106,6 +107,20 @@ export function RunDetail({ runId }: { runId: string }) {
     }
   };
 
+  const exportRun = () => {
+    if (!run) return;
+    const blob = new Blob([JSON.stringify(run, null, 2)], {
+      type: "application/json",
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${run.workflowName.replace(/\s+/g, "-").toLowerCase()}.run.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast("success", "Run exported", "Saved run record as JSON");
+  };
+
   if (loading) return <FullscreenLoader label="Loading run" />;
 
   if (notFound || !run) {
@@ -159,6 +174,13 @@ export function RunDetail({ runId }: { runId: string }) {
             </div>
           </div>
           <div className="ml-auto flex items-center gap-2">
+            <button
+              onClick={exportRun}
+              title="Export this run as JSON"
+              className="flex items-center gap-1.5 rounded-lg border border-line px-3 py-1.5 text-sm text-ink-soft transition-colors hover:border-brand/50 hover:text-ink"
+            >
+              <Download size={14} /> Export
+            </button>
             <Link
               href={`/editor/${run.workflowId}`}
               className="flex items-center gap-1.5 rounded-lg border border-line px-3 py-1.5 text-sm text-ink-soft transition-colors hover:border-brand/50 hover:text-ink"

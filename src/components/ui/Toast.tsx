@@ -5,18 +5,39 @@ import { CheckCircle2, AlertTriangle, XCircle, Info, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type ToastKind = "success" | "error" | "warning" | "info";
+
+interface ToastAction {
+  label: string;
+  /** Called when the action is clicked. Return nothing. */
+  onClick: () => void;
+}
+
+interface ToastOptions {
+  /** Auto-dismiss delay in ms. Defaults to 4200. Pass 0 to make it sticky. */
+  duration?: number;
+  /** Optional inline action button. */
+  action?: ToastAction;
+}
+
 interface Toast {
   id: string;
   kind: ToastKind;
   title: string;
   message?: string;
+  action?: ToastAction;
 }
 
 interface ToastCtx {
-  toast: (kind: ToastKind, title: string, message?: string) => void;
+  toast: (
+    kind: ToastKind,
+    title: string,
+    message?: string,
+    options?: ToastOptions
+  ) => void;
+  dismiss: (id: string) => void;
 }
 
-const Ctx = createContext<ToastCtx>({ toast: () => {} });
+const Ctx = createContext<ToastCtx>({ toast: () => {}, dismiss: () => {} });
 
 export function useToast() {
   return useContext(Ctx);
@@ -38,19 +59,29 @@ const COLORS = {
 export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);
 
-  const toast = useCallback(
-    (kind: ToastKind, title: string, message?: string) => {
+  const dismiss = useCallback((id: string) => {
+    setToasts((t) => t.filter((x) => x.id !== id));
+  }, []);
+
+  const toast = useCallback<ToastCtx["toast"]>(
+    (kind, title, message, options) => {
       const id = Math.random().toString(36).slice(2);
-      setToasts((t) => [...t, { id, kind, title, message }]);
-      setTimeout(() => {
-        setToasts((t) => t.filter((x) => x.id !== id));
-      }, 4200);
+      setToasts((t) => [
+        ...t,
+        { id, kind, title, message, action: options?.action },
+      ]);
+      const duration = options?.duration ?? 4200;
+      if (duration > 0) {
+        setTimeout(() => {
+          setToasts((t) => t.filter((x) => x.id !== id));
+        }, duration);
+      }
     },
     []
   );
 
   return (
-    <Ctx.Provider value={{ toast }}>
+    <Ctx.Provider value={{ toast, dismiss }}>
       {children}
       <div className="fixed bottom-5 right-5 z-[100] flex flex-col gap-2 w-[340px]">
         {toasts.map((t) => {
@@ -68,9 +99,23 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
                     {t.message}
                   </div>
                 )}
+                {t.action && (
+                  <button
+                    onClick={() => {
+                      t.action!.onClick();
+                      dismiss(t.id);
+                    }}
+                    className={cn(
+                      "mt-2 rounded-md border px-2.5 py-1 text-xs font-medium transition-colors",
+                      "border-line text-ink-soft hover:border-brand/50 hover:text-ink"
+                    )}
+                  >
+                    {t.action.label}
+                  </button>
+                )}
               </div>
               <button
-                onClick={() => setToasts((x) => x.filter((y) => y.id !== t.id))}
+                onClick={() => dismiss(t.id)}
                 className="text-ink-dim hover:text-ink transition-colors"
               >
                 <X size={15} />

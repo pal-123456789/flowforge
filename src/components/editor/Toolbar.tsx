@@ -20,10 +20,12 @@ import {
   Upload,
 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 export function Toolbar() {
   const { toast } = useToast();
+  const router = useRouter();
   const [saving, setSaving] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -90,17 +92,35 @@ export function Toolbar() {
         }
       );
       const final = useEditorStore.getState().lastRun;
+      const canViewDetail =
+        final && final.workflowId && final.workflowId !== "inline";
+      const detailAction = canViewDetail
+        ? {
+            label: "View details →",
+            onClick: () => router.push(`/runs/${final!.id}`),
+          }
+        : undefined;
       if (final?.status === "success") {
-        toast("success", "Workflow completed", `${final.successCount} nodes · ${final.durationMs}ms`);
+        toast(
+          "success",
+          "Workflow completed",
+          `${final.successCount} nodes · ${final.durationMs}ms`,
+          { action: detailAction }
+        );
       } else {
-        toast("error", "Workflow finished with errors", `${final?.errorCount} node(s) failed`);
+        toast(
+          "error",
+          "Workflow finished with errors",
+          `${final?.errorCount} node(s) failed`,
+          { action: detailAction }
+        );
       }
     } catch (e) {
       toast("error", "Run failed", (e as Error).message);
     } finally {
       useEditorStore.getState().setRunning(false);
     }
-  }, [toast]);
+  }, [toast, router]);
 
   const save = useCallback(async () => {
     setSaving(true);

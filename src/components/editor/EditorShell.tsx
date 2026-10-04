@@ -10,6 +10,7 @@ import { Inspector } from "@/components/inspector/Inspector";
 import { RunConsole } from "@/components/console/RunConsole";
 import { ShortcutsHelp } from "@/components/editor/ShortcutsHelp";
 import { ValidationPanel } from "@/components/editor/ValidationPanel";
+import { RunProgressBar } from "@/components/editor/RunProgressBar";
 import { FullscreenLoader } from "@/components/ui/Loader3D";
 import { emptyWorkflow } from "@/lib/templates";
 import type { Workflow } from "@/lib/types";
@@ -143,6 +144,7 @@ export function EditorShell({ workflowId }: { workflowId?: string }) {
         <div className="flex-1 flex flex-col overflow-hidden">
           <div className="flex-1 relative overflow-hidden">
             <Canvas />
+            <RunProgressBar />
             <ValidationPanel />
             <button
               onClick={() => setHelpOpen(true)}

@@ -19,6 +19,10 @@ import {
   XCircle,
   Play,
   Loader2,
+  Copy,
+  Pencil,
+  Check,
+  X,
 } from "lucide-react";
 import { Reveal, StaggerGroup, staggerItem, TiltCard } from "./primitives";
 import { SectionIntro } from "./Sections";
@@ -47,6 +51,7 @@ export function Workspace({
   const { toast } = useToast();
   const [pendingTpl, setPendingTpl] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [busyId, setBusyId] = useState<string | null>(null);
 
   const useTemplate = async (id: string) => {
     if (pendingTpl) return;
@@ -79,6 +84,65 @@ export function Workspace({
     toast("info", "Workflow deleted");
     onRefresh();
     setDeletingId(null);
+  };
+
+  const duplicate = async (wf: Workflow, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (busyId) return;
+    setBusyId(wf.id);
+    try {
+      // fetch the full workflow (list payload may omit nodes/edges detail)
+      const res = await fetch(`/api/workflows/${wf.id}`);
+      const full = res.ok ? ((await res.json()).workflow as Workflow) : wf;
+      const now = new Date().toISOString();
+      const copy: Workflow = {
+        ...full,
+        id: `wf_${Math.random().toString(36).slice(2, 10)}`,
+        name: `${full.name} (copy)`,
+        createdAt: now,
+        updatedAt: now,
+      };
+      const save = await fetch("/api/workflows", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(copy),
+      });
+      if (!save.ok) throw new Error("duplicate failed");
+      toast("success", "Workflow duplicated", copy.name);
+      onRefresh();
+    } catch (err) {
+      toast("error", "Could not duplicate", (err as Error).message);
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  const rename = async (wf: Workflow, nextName: string) => {
+    const trimmed = nextName.trim();
+    if (!trimmed || trimmed === wf.name) return;
+    setBusyId(wf.id);
+    try {
+      const res = await fetch(`/api/workflows/${wf.id}`);
+      const full = res.ok ? ((await res.json()).workflow as Workflow) : wf;
+      const updated: Workflow = {
+        ...full,
+        name: trimmed,
+        updatedAt: new Date().toISOString(),
+      };
+      const save = await fetch(`/api/workflows/${wf.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updated),
+      });
+      if (!save.ok) throw new Error("rename failed");
+      toast("success", "Workflow renamed", trimmed);
+      onRefresh();
+    } catch (err) {
+      toast("error", "Could not rename", (err as Error).message);
+    } finally {
+      setBusyId(null);
+    }
   };
 
   return (
@@ -117,7 +181,10 @@ export function Workspace({
                 <WorkflowCard
                   wf={wf}
                   onDelete={remove}
+                  onDuplicate={duplicate}
+                  onRename={rename}
                   deleting={deletingId === wf.id}
+                  busy={busyId === wf.id}
                 />
               </motion.div>
             ))}
@@ -209,40 +276,119 @@ export function Workspace({
 function WorkflowCard({
   wf,
   onDelete,
+  onDuplicate,
+  onRename,
   deleting,
+  busy,
 }: {
   wf: Workflow;
   onDelete: (id: string, e: React.MouseEvent) => void;
+  onDuplicate: (wf: Workflow, e: React.MouseEvent) => void;
+  onRename: (wf: Workflow, name: string) => void;
   deleting?: boolean;
+  busy?: boolean;
 }) {
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(wf.name);
+
+  const startRename = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDraft(wf.name);
+    setEditing(true);
+  };
+
+  const commit = () => {
+    onRename(wf, draft);
+    setEditing(false);
+  };
+
   return (
     <TiltCard max={6} glare={false} className="h-full">
       <Link
         href={`/editor/${wf.id}`}
         className={cn(
           "group relative block h-full rounded-2xl border border-line bg-bg-soft/70 p-5 transition-all hover:border-brand/60 hover:shadow-glow",
-          deleting && "pointer-events-none opacity-50"
+          (deleting || busy) && "pointer-events-none opacity-50"
         )}
       >
         <div className="mb-3 flex items-start justify-between">
           <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-brand/15">
             <WorkflowIcon size={18} className="text-brand-soft" />
           </div>
-          <button
-            onClick={(e) => onDelete(wf.id, e)}
-            disabled={deleting}
-            className="rounded-md p-1.5 text-ink-dim opacity-0 transition-all hover:bg-bg-panel hover:text-err group-hover:opacity-100"
-          >
-            {deleting ? (
-              <Loader2 size={15} className="animate-spin" />
-            ) : (
-              <Trash2 size={15} />
-            )}
-          </button>
+          <div className="flex items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
+            <button
+              onClick={startRename}
+              disabled={deleting || busy}
+              title="Rename"
+              className="rounded-md p-1.5 text-ink-dim transition-all hover:bg-bg-panel hover:text-brand-soft"
+            >
+              <Pencil size={14} />
+            </button>
+            <button
+              onClick={(e) => onDuplicate(wf, e)}
+              disabled={deleting || busy}
+              title="Duplicate"
+              className="rounded-md p-1.5 text-ink-dim transition-all hover:bg-bg-panel hover:text-ink"
+            >
+              {busy ? (
+                <Loader2 size={14} className="animate-spin" />
+              ) : (
+                <Copy size={14} />
+              )}
+            </button>
+            <button
+              onClick={(e) => onDelete(wf.id, e)}
+              disabled={deleting}
+              title="Delete"
+              className="rounded-md p-1.5 text-ink-dim transition-all hover:bg-bg-panel hover:text-err"
+            >
+              {deleting ? (
+                <Loader2 size={14} className="animate-spin" />
+              ) : (
+                <Trash2 size={14} />
+              )}
+            </button>
+          </div>
         </div>
-        <h3 className="truncate text-[15px] font-semibold text-ink">
-          {wf.name}
-        </h3>
+        {editing ? (
+          <div
+            className="flex items-center gap-1.5"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+            }}
+          >
+            <input
+              autoFocus
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") commit();
+                if (e.key === "Escape") setEditing(false);
+              }}
+              className="min-w-0 flex-1 rounded-md border border-brand/50 bg-bg-panel px-2 py-1 text-[15px] font-semibold text-ink focus:outline-none focus:border-brand"
+            />
+            <button
+              onClick={commit}
+              className="rounded-md p-1.5 text-ok hover:bg-ok/10"
+              title="Save name"
+            >
+              <Check size={15} />
+            </button>
+            <button
+              onClick={() => setEditing(false)}
+              className="rounded-md p-1.5 text-ink-dim hover:bg-bg-panel hover:text-ink"
+              title="Cancel"
+            >
+              <X size={15} />
+            </button>
+          </div>
+        ) : (
+          <h3 className="truncate text-[15px] font-semibold text-ink">
+            {wf.name}
+          </h3>
+        )}
         <p className="mt-1 line-clamp-2 min-h-[2.5em] text-[13px] text-ink-dim">
           {wf.description || "No description"}
         </p>

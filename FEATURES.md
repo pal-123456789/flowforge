@@ -11,6 +11,8 @@ ships in the codebase and runs offline.
 - Animated smoothstep edges with arrowheads.
 - Drag to connect nodes; invalid connections are rejected.
 - Multi-handle branch nodes (If/Else True+False, Switch 3 cases + default, Loop "each item").
+- **Double-click quick-add** — double-click any empty canvas spot for a fuzzy, keyboard-driven
+  node picker that drops the chosen node exactly at the cursor (type to filter, ↑/↓, Enter).
 
 ## 2. Node palette
 
@@ -28,6 +30,8 @@ ships in the codebase and runs offline.
 - Conditional fields via `showIf` (e.g. the "compare to" field only shows for certain operators).
 - Inline help text and placeholders.
 - Live two-way binding to the editor store.
+- **Run from here** — execute the selected node and its entire downstream subtree in one click;
+  upstream nodes are reported as skipped. Ideal for iterating on the tail of a long workflow.
 
 ## 4. Live validation
 
@@ -43,6 +47,8 @@ ships in the codebase and runs offline.
 - Delete selected node (`Delete` / `Backspace`).
 - Dirty-state indicator; save with `Ctrl+S`.
 - Import a `*.flowforge.json` file (schema-validated); export the current workflow to one.
+- **Duplicate & rename workflows** from the workspace — hover any card to deep-copy it into a new
+  workflow (nodes, edges, and config intact) or rename it inline.
 
 ## 6. Execution engine
 
@@ -107,6 +113,7 @@ ships in the codebase and runs offline.
 - Navigate home, open analytics, open **run history**, browse templates, explore the node library.
 - Create a new workflow.
 - Insert **any** node type — deep-links to `/editor?add=<type>` on a fresh canvas.
+- **Toggle light / dark theme.**
 - Escape to close.
 
 ## 14. Landing experience
@@ -123,7 +130,11 @@ ships in the codebase and runs offline.
 - Bespoke 3D loading animations on every route transition.
 - Graceful 3D degradation: SSR-off dynamic import + error boundary + CSS fallback.
 - `prefers-reduced-motion` honored (smooth-scroll and heavy motion disabled).
-- Dark, token-based design system consistent across every surface.
+- **Light & dark themes** — a CSS-variable token system (`<html data-theme>`), toggleable from the
+  toolbar or command palette, persisted in `localStorage`, and applied pre-paint to avoid flashes.
+- Token-based design system consistent across every surface — including the React Flow canvas,
+  controls, and minimap, which all adapt to the active theme.
+- **First-run onboarding tour** — a five-step guided walkthrough shown once per browser.
 - Toast notifications for all key actions.
 
 ## 16. Offline-first guarantees

@@ -14,6 +14,7 @@ import ReactFlow, {
 import FlowNode from "./FlowNode";
 import { useEditorStore } from "@/store/editorStore";
 import { recordRecentNode } from "./NodePalette";
+import { QuickAdd, type QuickAddState } from "./QuickAdd";
 import { CATEGORY_HEX, getNodeDef } from "@/lib/nodeRegistry";
 
 const nodeTypes: NodeTypes = { flowNode: FlowNode };
@@ -21,6 +22,7 @@ const nodeTypes: NodeTypes = { flowNode: FlowNode };
 function CanvasInner() {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [instance, setInstance] = useState<ReactFlowInstance | null>(null);
+  const [quickAdd, setQuickAdd] = useState<QuickAddState | null>(null);
   const { screenToFlowPosition } = useReactFlow();
 
   const nodes = useEditorStore((s) => s.nodes);
@@ -48,8 +50,38 @@ function CanvasInner() {
     e.dataTransfer.dropEffect = "move";
   }, []);
 
+  // double-click an empty area of the pane → fuzzy quick-add menu
+  const onPaneDoubleClick = useCallback(
+    (e: React.MouseEvent) => {
+      const flow = screenToFlowPosition({ x: e.clientX, y: e.clientY });
+      setQuickAdd({ screen: { x: e.clientX, y: e.clientY }, flow });
+    },
+    [screenToFlowPosition]
+  );
+
+  const quickAddPick = useCallback(
+    (type: string, flow: { x: number; y: number }) => {
+      recordRecentNode(type);
+      addNodeOfType(type, flow);
+    },
+    [addNodeOfType]
+  );
+
   return (
-    <div ref={wrapperRef} className="w-full h-full">
+    <div
+      ref={wrapperRef}
+      className="w-full h-full"
+      onDoubleClick={(e) => {
+        // only trigger when double-clicking empty pane (not nodes/edges/controls)
+        const target = e.target as HTMLElement;
+        if (
+          target.classList.contains("react-flow__pane") ||
+          target.classList.contains("react-flow__background")
+        ) {
+          onPaneDoubleClick(e);
+        }
+      }}
+    >
       <ReactFlow
         nodes={nodes}
         edges={edges as any}
@@ -74,7 +106,7 @@ function CanvasInner() {
           variant={BackgroundVariant.Dots}
           gap={22}
           size={1.5}
-          color="#242838"
+          color="var(--c-dots)"
         />
         <Controls showInteractive={false} />
         <MiniMap
@@ -88,6 +120,11 @@ function CanvasInner() {
           style={{ width: 160, height: 100 }}
         />
       </ReactFlow>
+      <QuickAdd
+        state={quickAdd}
+        onPick={quickAddPick}
+        onClose={() => setQuickAdd(null)}
+      />
     </div>
   );
 }

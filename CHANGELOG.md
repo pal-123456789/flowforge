@@ -2,6 +2,28 @@
 
 All notable changes to FlowForge. This project targets ALGOTHON'26 (`ALG-AUTO-01`).
 
+## [1.2.0] — Flow ergonomics & themeable UI
+
+### Added
+- **Run from here** — execute a single node and everything downstream of it, straight from the
+  inspector. The engine computes the downstream reachable set, seeds the chosen node directly,
+  and reports every upstream node as skipped. Great for iterating on the tail of a long graph.
+- **Canvas quick-add** — double-click any empty spot on the canvas for a fuzzy, keyboard-driven
+  node picker (type to filter all 20 nodes, ↑/↓ to navigate, Enter to drop at the cursor).
+- **Light & dark themes** — a token-based theme system (CSS variables on `<html data-theme>`)
+  with a toggle in both the editor toolbar and the command palette. The choice persists in
+  `localStorage` and is applied before first paint to avoid any flash.
+- **Workflow duplicate & rename** — hover any workspace card to duplicate it (deep-copies nodes,
+  edges, and config into a new workflow) or rename it inline.
+- **First-run onboarding tour** — a five-step guided walkthrough shown once per browser
+  (`localStorage`-gated), re-openable via the `flowforge:tour` event.
+
+### Changed
+- Neutral design tokens (`bg`/`line`/`ink`) now resolve through CSS variables so every surface —
+  including the React Flow canvas, controls, and minimap — adapts to the active theme.
+- The editor **Run** button and `Ctrl+Enter` now route through a single run path that also powers
+  partial "Run from here" executions.
+
 ## [1.1.0] — Run observability & deeper editor
 
 ### Added

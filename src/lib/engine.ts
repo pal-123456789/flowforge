@@ -22,6 +22,12 @@ export interface RunOptions {
   initialInput?: unknown;
   /** only run from this trigger id (if multiple triggers exist) */
   startNodeId?: string;
+  /**
+   * Partial execution ("Run from here"): ignore triggers and begin at this
+   * node, seeding it with `initialInput`, then propagate downstream normally.
+   * Every node upstream of this one is reported as skipped.
+   */
+  fromNodeId?: string;
   signal?: AbortSignal;
 }
 
@@ -93,20 +99,60 @@ export async function executeWorkflow(
     opts.startNodeId ? [opts.startNodeId] : triggers
   );
 
+  // Partial execution ("Run from here"): compute the downstream reachable set
+  // from the chosen node so everything upstream is skipped. The chosen node is
+  // seeded as if it were a trigger with `initialInput`.
+  let reachable: Set<string> | null = null;
+  if (opts.fromNodeId && nodeMap.has(opts.fromNodeId)) {
+    reachable = new Set<string>([opts.fromNodeId]);
+    const stack = [opts.fromNodeId];
+    while (stack.length) {
+      const cur = stack.pop()!;
+      for (const e of outEdges[cur] || []) {
+        if (!reachable.has(e.target)) {
+          reachable.add(e.target);
+          stack.push(e.target);
+        }
+      }
+    }
+  }
+
   for (const nodeId of analysis.order) {
     const node = nodeMap.get(nodeId);
     if (!node) continue;
     const def = getNodeDef(node.data.type);
     if (!def) continue;
 
+    // In partial-run mode, anything not reachable from the start node is skipped
+    if (reachable && !reachable.has(nodeId)) {
+      const skipped: NodeRunResult = {
+        nodeId,
+        nodeType: node.data.type,
+        label: node.data.label,
+        status: "skipped",
+        startedAt: Date.now(),
+        finishedAt: Date.now(),
+        durationMs: 0,
+        logs: [],
+      };
+      results.push(skipped);
+      events.onNodeFinish?.(skipped);
+      continue;
+    }
+
     const incoming = inEdges[nodeId] || [];
     const isTrigger = def.category === "trigger";
+    const isPartialStart = reachable !== null && nodeId === opts.fromNodeId;
 
     // determine if this node should run
     let shouldRun = false;
     let input: unknown;
 
-    if (isTrigger) {
+    if (isPartialStart) {
+      // seed the chosen node directly, bypassing its upstream dependencies
+      shouldRun = true;
+      input = opts.initialInput;
+    } else if (isTrigger) {
       shouldRun = startSet.size === 0 || startSet.has(nodeId);
       input = opts.initialInput;
     } else {

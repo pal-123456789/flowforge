@@ -18,14 +18,18 @@ import {
   Webhook,
   Download,
   Upload,
+  Sun,
+  Moon,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { useTheme } from "@/lib/theme";
 
 export function Toolbar() {
   const { toast } = useToast();
   const router = useRouter();
+  const { theme, toggle: toggleTheme } = useTheme();
   const [saving, setSaving] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -41,7 +45,7 @@ export function Toolbar() {
   const errorCount = analysis.issues.filter((i) => i.level === "error").length;
   const warnCount = analysis.issues.filter((i) => i.level === "warning").length;
 
-  const run = useCallback(async () => {
+  const run = useCallback(async (fromNodeId?: string) => {
     const store = useEditorStore.getState();
     const a = analyzeGraph(store.nodes, store.edges);
     if (!a.isValid) {
@@ -89,7 +93,8 @@ export function Toolbar() {
               }).catch(() => {});
             }
           },
-        }
+        },
+        fromNodeId ? { fromNodeId } : undefined
       );
       const final = useEditorStore.getState().lastRun;
       const canViewDetail =
@@ -100,17 +105,18 @@ export function Toolbar() {
             onClick: () => router.push(`/runs/${final!.id}`),
           }
         : undefined;
+      const scope = fromNodeId ? "Partial run" : "Workflow";
       if (final?.status === "success") {
         toast(
           "success",
-          "Workflow completed",
+          `${scope} completed`,
           `${final.successCount} nodes · ${final.durationMs}ms`,
           { action: detailAction }
         );
       } else {
         toast(
           "error",
-          "Workflow finished with errors",
+          `${scope} finished with errors`,
           `${final?.errorCount} node(s) failed`,
           { action: detailAction }
         );
@@ -147,11 +153,20 @@ export function Toolbar() {
     const onRun = () => {
       if (!useEditorStore.getState().running) run();
     };
+    const onRunFrom = (e: Event) => {
+      const id = (e as CustomEvent<string>).detail;
+      if (id && !useEditorStore.getState().running) run(id);
+    };
     window.addEventListener("flowforge:save", onSave);
     window.addEventListener("flowforge:run", onRun);
+    window.addEventListener("flowforge:run-from", onRunFrom as EventListener);
     return () => {
       window.removeEventListener("flowforge:save", onSave);
       window.removeEventListener("flowforge:run", onRun);
+      window.removeEventListener(
+        "flowforge:run-from",
+        onRunFrom as EventListener
+      );
     };
   }, [save, run]);
 
@@ -276,6 +291,13 @@ export function Toolbar() {
 
         <div className="w-px h-6 bg-line mx-1" />
 
+        <IconBtn
+          onClick={toggleTheme}
+          title={theme === "light" ? "Switch to dark theme" : "Switch to light theme"}
+        >
+          {theme === "light" ? <Moon size={16} /> : <Sun size={16} />}
+        </IconBtn>
+
         <IconBtn onClick={copyWebhook} title="Copy webhook URL">
           <Webhook size={16} />
         </IconBtn>
@@ -312,7 +334,7 @@ export function Toolbar() {
         </button>
 
         <button
-          onClick={run}
+          onClick={() => run()}
           disabled={running || errorCount > 0}
           className={cn(
             "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all",

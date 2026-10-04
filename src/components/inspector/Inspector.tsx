@@ -11,7 +11,7 @@ import {
   Toggle,
   KeyValueEditor,
 } from "./fields";
-import { Copy, Trash2, Settings2, Info } from "lucide-react";
+import { Copy, Trash2, Settings2, Info, PlayCircle } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
 
 export function Inspector() {
@@ -24,6 +24,7 @@ export function Inspector() {
   const deleteNode = useEditorStore((s) => s.deleteNode);
   const duplicateNode = useEditorStore((s) => s.duplicateNode);
   const lastRun = useEditorStore((s) => s.lastRun);
+  const running = useEditorStore((s) => s.running);
   const { toast } = useToast();
 
   if (!node) {
@@ -97,6 +98,18 @@ export function Inspector() {
             <Trash2 size={13} /> Delete
           </button>
         </div>
+        <button
+          disabled={running}
+          onClick={() => {
+            window.dispatchEvent(
+              new CustomEvent("flowforge:run-from", { detail: node.id })
+            );
+          }}
+          className="mt-2 w-full flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-lg bg-brand/10 border border-brand/40 text-xs font-medium text-brand-soft hover:bg-brand/20 hover:border-brand transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+          title="Execute this node and everything downstream of it"
+        >
+          <PlayCircle size={13} /> Run from here
+        </button>
       </div>
 
       {/* description */}

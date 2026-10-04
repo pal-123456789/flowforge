@@ -18,16 +18,27 @@ export async function runLive(
   nodes: FlowNode[],
   edges: FlowEdge[],
   meta: { workflowId: string; workflowName: string },
-  handlers: LiveRunHandlers
+  handlers: LiveRunHandlers,
+  opts: { fromNodeId?: string; initialInput?: unknown; trigger?: string } = {}
 ): Promise<RunRecord> {
   // small delay helper so the UI can animate node transitions
   const originalFetch = globalThis.fetch;
   void originalFetch;
 
-  return executeWorkflow(nodes, edges, meta, { trigger: "manual" }, {
-    onNodeStart: handlers.onNodeStart,
-    onNodeFinish: handlers.onNodeFinish,
-    onLog: handlers.onLog,
-    onDone: handlers.onDone,
-  });
+  return executeWorkflow(
+    nodes,
+    edges,
+    meta,
+    {
+      trigger: opts.trigger || (opts.fromNodeId ? "partial" : "manual"),
+      fromNodeId: opts.fromNodeId,
+      initialInput: opts.initialInput,
+    },
+    {
+      onNodeStart: handlers.onNodeStart,
+      onNodeFinish: handlers.onNodeFinish,
+      onLog: handlers.onLog,
+      onDone: handlers.onDone,
+    }
+  );
 }

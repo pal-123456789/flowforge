@@ -4,6 +4,7 @@ import "reactflow/dist/style.css";
 import { ToastProvider } from "@/components/ui/Toast";
 import { CommandPaletteProvider } from "@/components/CommandPalette";
 import { ClickFX } from "@/components/ui/ClickFX";
+import { THEME_BOOT_SCRIPT } from "@/lib/theme";
 
 export const metadata: Metadata = {
   title: "FlowForge — Visual Workflow Automation",
@@ -20,6 +21,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_BOOT_SCRIPT }} />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"

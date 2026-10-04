@@ -11,6 +11,7 @@ import { RunConsole } from "@/components/console/RunConsole";
 import { ShortcutsHelp } from "@/components/editor/ShortcutsHelp";
 import { ValidationPanel } from "@/components/editor/ValidationPanel";
 import { RunProgressBar } from "@/components/editor/RunProgressBar";
+import { OnboardingTour } from "@/components/editor/OnboardingTour";
 import { FullscreenLoader } from "@/components/ui/Loader3D";
 import { emptyWorkflow } from "@/lib/templates";
 import type { Workflow } from "@/lib/types";
@@ -159,6 +160,7 @@ export function EditorShell({ workflowId }: { workflowId?: string }) {
         <Inspector />
       </div>
       <ShortcutsHelp open={helpOpen} onClose={() => setHelpOpen(false)} />
+      <OnboardingTour />
     </div>
   );
 }

@@ -24,6 +24,7 @@ const GROUPS: { title: string; rows: ShortcutRow[] }[] = [
       { keys: ["Ctrl", "Z"], label: "Undo" },
       { keys: ["Ctrl", "Shift", "Z"], label: "Redo" },
       { keys: ["Ctrl", "D"], label: "Duplicate selected node" },
+      { keys: ["Double-click"], label: "Quick-add a node at cursor" },
       { keys: ["Del"], label: "Delete selected node" },
     ],
   },

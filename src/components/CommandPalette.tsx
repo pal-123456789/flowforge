@@ -23,9 +23,12 @@ import {
   ArrowUp,
   ArrowDown,
   Boxes,
+  Sun,
+  Moon,
 } from "lucide-react";
 import { NODE_TYPES, CATEGORY_HEX } from "@/lib/nodeRegistry";
 import { Icon } from "@/components/ui/Icon";
+import { useTheme } from "@/lib/theme";
 
 interface Command {
   id: string;
@@ -60,6 +63,7 @@ export function CommandPaletteProvider({
   children: React.ReactNode;
 }) {
   const router = useRouter();
+  const { theme, toggle: toggleTheme } = useTheme();
   const [isOpen, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [cursor, setCursor] = useState(0);
@@ -87,6 +91,15 @@ export function CommandPaletteProvider({
         icon: <Plus size={16} />,
         keywords: "blank create build",
         run: () => router.push("/editor"),
+      },
+      {
+        id: "toggle-theme",
+        title: theme === "light" ? "Switch to dark theme" : "Switch to light theme",
+        subtitle: "Toggle the interface color scheme",
+        group: "Actions",
+        icon: theme === "light" ? <Moon size={16} /> : <Sun size={16} />,
+        keywords: "theme dark light mode appearance color scheme toggle",
+        run: () => toggleTheme(),
       },
       {
         id: "nav-analytics",
@@ -153,7 +166,7 @@ export function CommandPaletteProvider({
       run: () => router.push(`/editor?add=${encodeURIComponent(n.type)}`),
     }));
     return [...base, ...nodeCmds];
-  }, [router]);
+  }, [router, theme, toggleTheme]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();

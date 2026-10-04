@@ -80,12 +80,15 @@ FlowForge is intentionally deep. Here are the headline capabilities; the full in
 [`FEATURES.md`](./FEATURES.md).
 
 ### The editor
-- **Infinite node canvas** — drag, connect, pan, zoom, fit-view, minimap, dotted grid. Powered by React Flow with fully custom per-category node rendering.
+- **Infinite node canvas** — drag, connect, pan, zoom, fit-view, minimap, dotted grid. Powered by React Flow with fully custom per-category node rendering. **Double-click any empty spot** for a fuzzy, keyboard-driven quick-add that drops a node right at the cursor.
 - **Smart node palette** — live fuzzy search, collapsible categories, **drag-or-click to add**, **★ favorites** (persisted in `localStorage`), and a **Recent** section that tracks the nodes you use most.
-- **Inspector forms** — every node renders a typed config form: text, number, select, boolean, textarea, JSON, code, and key/value editors, with conditional `showIf` fields.
+- **Inspector forms** — every node renders a typed config form: text, number, select, boolean, textarea, JSON, code, and key/value editors, with conditional `showIf` fields. Includes **Run from here** to execute the selected node and everything downstream of it.
 - **Live validation panel** — a floating badge continuously analyzes the graph and lists every error/warning (empty graph, missing trigger, orphaned nodes, cycles). Click an issue to jump straight to the offending node.
 - **Undo / redo** — a 50-step history stack for every structural edit.
 - **Duplicate, delete, multi-select** — full keyboard-driven editing.
+- **Workspace management** — hover any workflow card to **duplicate** (deep-copy) or **rename** it inline.
+- **Light & dark themes** — toggle from the toolbar or command palette; the choice persists and applies before first paint. Every surface, including the canvas, adapts.
+- **First-run onboarding tour** — a concise five-step walkthrough for new users (shown once per browser).
 - **Autosave-ready persistence** — save to the file store with one keystroke; dirty-state indicator in the toolbar.
 
 ### Running & observing
@@ -108,7 +111,7 @@ FlowForge is intentionally deep. Here are the headline capabilities; the full in
 - **Webhook triggers** — every saved workflow gets a live `POST /api/webhook/[id]` endpoint that executes it with the request body as input.
 - **Import / export** — download any workflow as portable `*.flowforge.json`; re-import with schema validation.
 - **One-click templates** — seed-ready starter workflows you can open and run instantly.
-- **Command palette (⌘K / Ctrl+K)** — fuzzy-search to navigate, create workflows, open analytics or run history, or deep-link **any node type** straight onto a fresh canvas.
+- **Command palette (⌘K / Ctrl+K)** — fuzzy-search to navigate, create workflows, open analytics or run history, toggle the light/dark theme, or deep-link **any node type** straight onto a fresh canvas.
 
 ### Presentation
 - **Cinematic 3D landing page** — a scroll-driven marketing experience with a WebGL node-constellation hero (Three.js via @react-three/fiber), aurora backgrounds, scroll reveals, count-up metrics, and an auto-playing live-engine demo.
@@ -255,7 +258,7 @@ Expressions are resolved against the node's incoming data. The `If/Else`, `Switc
 - **Framework:** Next.js 14 (App Router), React 18, TypeScript.
 - **Canvas:** React Flow 11 with a custom `flowNode` renderer.
 - **State:** Zustand store with an undo/redo history stack.
-- **Styling:** Tailwind CSS 3 with a custom dark design-token theme.
+- **Styling:** Tailwind CSS 3 with a custom CSS-variable design-token system (light & dark themes).
 - **Motion/3D:** Framer Motion, Three.js + @react-three/fiber, Lenis smooth-scroll.
 - **Persistence:** file-based JSON (survives restarts locally; per-session on serverless).
 
@@ -304,8 +307,9 @@ If unset, the AI node automatically uses its deterministic offline implementatio
 | `Ctrl+Shift+Z` / `Ctrl+Y` | Redo |
 | `Ctrl+D` | Duplicate selected node |
 | `Delete` / `Backspace` | Delete selected node |
+| Double-click canvas | Quick-add a node at the cursor |
 | `?` | Toggle the shortcuts overlay |
-| `Esc` | Close palette / overlay |
+| `Esc` | Close palette / overlay / quick-add |
 
 ---
 
@@ -383,7 +387,7 @@ flowforge/
 
 ## 🎨 Design system
 
-- **Theme:** dark-first, with CSS variables in `globals.css` — `--brand #7c5cff`, `--brand-soft #9d84ff`, `--iris #06b6d4`.
+- **Theme:** dark & light, driven by CSS variables on `<html data-theme>` in `globals.css`. Neutral tokens (`bg`/`line`/`ink`) resolve per theme; accents stay constant — `--brand #7c5cff`, `--brand-soft #9d84ff`, `--iris #06b6d4`. The choice persists in `localStorage` and is applied before first paint.
 - **Typography:** Inter (UI) + JetBrains Mono (code/data).
 - **Category colors:** triggers green, actions blue, logic amber, data pink, AI cyan — consistent across the palette, nodes, minimap, timeline, and analytics.
 - **Motion:** out-expo easing `[0.16, 1, 0.3, 1]`; spring `cubic-bezier(0.22, 1, 0.36, 1)`.

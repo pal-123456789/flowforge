@@ -6,22 +6,22 @@ const config: Config = {
     extend: {
       colors: {
         bg: {
-          DEFAULT: "#07080f",
-          soft: "#0b0d16",
-          panel: "#11131f",
-          elevated: "#171a28",
-          glass: "rgba(17,19,31,0.6)",
+          DEFAULT: "var(--c-bg)",
+          soft: "var(--c-bg-soft)",
+          panel: "var(--c-bg-panel)",
+          elevated: "var(--c-bg-elevated)",
+          glass: "var(--c-bg-glass)",
         },
         line: {
-          DEFAULT: "#20243a",
-          soft: "#191c2c",
-          bright: "#2e3350",
+          DEFAULT: "var(--c-line)",
+          soft: "var(--c-line-soft)",
+          bright: "var(--c-line-bright)",
         },
         ink: {
-          DEFAULT: "#eef0fb",
-          soft: "#b4bad2",
-          dim: "#6c7495",
-          faint: "#434a68",
+          DEFAULT: "var(--c-ink)",
+          soft: "var(--c-ink-soft)",
+          dim: "var(--c-ink-dim)",
+          faint: "var(--c-ink-faint)",
         },
         brand: {
           DEFAULT: "#7c5cff",

@@ -8,6 +8,49 @@
   --brand: #7c5cff;
   --brand-soft: #9d84ff;
   --iris: #06b6d4;
+
+  /* ---- neutral design tokens (dark is the default theme) ---- */
+  --c-bg: #07080f;
+  --c-bg-soft: #0b0d16;
+  --c-bg-panel: #11131f;
+  --c-bg-elevated: #171a28;
+  --c-bg-glass: rgba(17, 19, 31, 0.6);
+  --c-line: #20243a;
+  --c-line-soft: #191c2c;
+  --c-line-bright: #2e3350;
+  --c-ink: #eef0fb;
+  --c-ink-soft: #b4bad2;
+  --c-ink-dim: #6c7495;
+  --c-ink-faint: #434a68;
+
+  /* raw page backdrop + scrollbars (consumed below) */
+  --c-page: #07080f;
+  --c-scroll-track: #242838;
+  --c-scroll-track-hover: #343a52;
+  --c-dots: #242838;
+  color-scheme: dark;
+}
+
+/* ---- light theme ---- */
+:root[data-theme="light"] {
+  --c-bg: #f7f8fc;
+  --c-bg-soft: #eef0f7;
+  --c-bg-panel: #ffffff;
+  --c-bg-elevated: #f0f2f9;
+  --c-bg-glass: rgba(255, 255, 255, 0.7);
+  --c-line: #dfe3ef;
+  --c-line-soft: #e8ebf4;
+  --c-line-bright: #c9cfe0;
+  --c-ink: #141627;
+  --c-ink-soft: #3d4260;
+  --c-ink-dim: #747a95;
+  --c-ink-faint: #a3a9c0;
+
+  --c-page: #f7f8fc;
+  --c-scroll-track: #d2d7e6;
+  --c-scroll-track-hover: #bcc3d8;
+  --c-dots: #d2d7e6;
+  color-scheme: light;
 }
 
 * {
@@ -39,12 +82,13 @@ body {
 }
 
 body {
-  background: #07080f;
-  color: #eef0fb;
+  background: var(--c-page);
+  color: var(--c-ink);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 ::selection {
@@ -61,12 +105,12 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #242838;
+  background: var(--c-scroll-track);
   border-radius: 8px;
-  border: 2px solid #07080f;
+  border: 2px solid var(--c-page);
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #343a52;
+  background: var(--c-scroll-track-hover);
 }
 
 /* ---------------------------------------------------------------- */
@@ -367,8 +411,8 @@ button,
 .react-flow__handle {
   width: 11px;
   height: 11px;
-  background: #0f111a;
-  border: 2px solid #6b7291;
+  background: var(--c-bg-soft);
+  border: 2px solid var(--c-ink-dim);
   transition: all 0.15s ease;
 }
 .react-flow__handle:hover {
@@ -383,25 +427,25 @@ button,
   box-shadow: none;
   border-radius: 10px;
   overflow: hidden;
-  border: 1px solid #242838;
+  border: 1px solid var(--c-line);
 }
 .react-flow__controls-button {
-  background: #131524;
-  border-bottom: 1px solid #242838;
-  color: #aab0c6;
+  background: var(--c-bg-panel);
+  border-bottom: 1px solid var(--c-line);
+  color: var(--c-ink-soft);
   width: 30px;
   height: 30px;
 }
 .react-flow__controls-button:hover {
-  background: #1a1d2e;
-  color: #e7e9f3;
+  background: var(--c-bg-elevated);
+  color: var(--c-ink);
 }
 .react-flow__controls-button svg {
   fill: currentColor;
 }
 .react-flow__minimap {
-  background: #0f111a;
-  border: 1px solid #242838;
+  background: var(--c-bg-soft);
+  border: 1px solid var(--c-line);
   border-radius: 10px;
 }
 .react-flow__attribution {

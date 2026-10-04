@@ -1,0 +1,102 @@
+{
+  "id": "seed_welcome-email",
+  "name": "New Signup → Welcome Email",
+  "description": "A webhook receives a signup, filters out missing emails, personalizes a message, and sends a welcome email.",
+  "tags": [
+    "onboarding",
+    "webhook",
+    "email"
+  ],
+  "nodes": [
+    {
+      "id": "n1",
+      "type": "flowNode",
+      "position": {
+        "x": 40,
+        "y": 160
+      },
+      "data": {
+        "type": "trigger.webhook",
+        "label": "Webhook",
+        "config": {
+          "sample": "{\n  \"name\": \"Ada\",\n  \"email\": \"ada@example.com\",\n  \"plan\": \"pro\"\n}"
+        }
+      }
+    },
+    {
+      "id": "n2",
+      "type": "flowNode",
+      "position": {
+        "x": 340,
+        "y": 160
+      },
+      "data": {
+        "type": "logic.filter",
+        "label": "Filter",
+        "config": {
+          "left": "{{email}}",
+          "operator": "contains",
+          "right": "@"
+        }
+      }
+    },
+    {
+      "id": "n3",
+      "type": "flowNode",
+      "position": {
+        "x": 640,
+        "y": 160
+      },
+      "data": {
+        "type": "data.template",
+        "label": "Template",
+        "config": {
+          "template": "Hi {{name}}, welcome aboard the {{plan}} plan!",
+          "outputKey": "greeting"
+        }
+      }
+    },
+    {
+      "id": "n4",
+      "type": "flowNode",
+      "position": {
+        "x": 940,
+        "y": 160
+      },
+      "data": {
+        "type": "action.email",
+        "label": "Send Email",
+        "config": {
+          "to": "{{email}}",
+          "subject": "Welcome to FlowForge, {{name}}!",
+          "body": "{{greeting}}\n\nWe're thrilled to have you."
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_n1_n2",
+      "source": "n1",
+      "target": "n2",
+      "sourceHandle": "out",
+      "animated": true
+    },
+    {
+      "id": "e_n2_n3",
+      "source": "n2",
+      "target": "n3",
+      "sourceHandle": "out",
+      "animated": true
+    },
+    {
+      "id": "e_n3_n4",
+      "source": "n3",
+      "target": "n4",
+      "sourceHandle": "out",
+      "animated": true
+    }
+  ],
+  "createdAt": "2026-10-04T05:58:07.645Z",
+  "updatedAt": "2026-10-04T05:58:07.645Z"
+}

@@ -1,0 +1,125 @@
+{
+  "id": "seed_order-pipeline",
+  "name": "Order Processing Pipeline",
+  "description": "Compute order totals with the Math node, run custom JS to apply discounts, set a status field, and persist the result to a file.",
+  "tags": [
+    "ecommerce",
+    "code",
+    "math",
+    "file"
+  ],
+  "nodes": [
+    {
+      "id": "n1",
+      "type": "flowNode",
+      "position": {
+        "x": 40,
+        "y": 180
+      },
+      "data": {
+        "type": "trigger.manual",
+        "label": "Manual Trigger",
+        "config": {
+          "payload": "{\n  \"orderId\": \"A-1021\",\n  \"price\": 49.99,\n  \"qty\": 3,\n  \"customer\": \"Zoe\"\n}"
+        }
+      }
+    },
+    {
+      "id": "n2",
+      "type": "flowNode",
+      "position": {
+        "x": 320,
+        "y": 180
+      },
+      "data": {
+        "type": "data.math",
+        "label": "Math",
+        "config": {
+          "expression": "{{price}} * {{qty}}",
+          "outputKey": "subtotal"
+        }
+      }
+    },
+    {
+      "id": "n3",
+      "type": "flowNode",
+      "position": {
+        "x": 600,
+        "y": 180
+      },
+      "data": {
+        "type": "data.code",
+        "label": "Code",
+        "config": {
+          "code": "const discount = input.subtotal > 100 ? 0.1 : 0;\nreturn {\n  ...input,\n  discount,\n  total: +(input.subtotal * (1 - discount)).toFixed(2),\n};"
+        }
+      }
+    },
+    {
+      "id": "n4",
+      "type": "flowNode",
+      "position": {
+        "x": 880,
+        "y": 180
+      },
+      "data": {
+        "type": "data.set",
+        "label": "Set",
+        "config": {
+          "fields": {
+            "status": "confirmed"
+          },
+          "keepExisting": true
+        }
+      }
+    },
+    {
+      "id": "n5",
+      "type": "flowNode",
+      "position": {
+        "x": 1160,
+        "y": 180
+      },
+      "data": {
+        "type": "action.writeFile",
+        "label": "Write File",
+        "config": {
+          "filename": "order-{{orderId}}.json",
+          "content": "{{json}}"
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_n1_n2",
+      "source": "n1",
+      "target": "n2",
+      "sourceHandle": "out",
+      "animated": true
+    },
+    {
+      "id": "e_n2_n3",
+      "source": "n2",
+      "target": "n3",
+      "sourceHandle": "out",
+      "animated": true
+    },
+    {
+      "id": "e_n3_n4",
+      "source": "n3",
+      "target": "n4",
+      "sourceHandle": "out",
+      "animated": true
+    },
+    {
+      "id": "e_n4_n5",
+      "source": "n4",
+      "target": "n5",
+      "sourceHandle": "out",
+      "animated": true
+    }
+  ],
+  "createdAt": "2026-10-04T05:58:07.645Z",
+  "updatedAt": "2026-10-04T05:58:07.645Z"
+}

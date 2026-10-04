@@ -1,0 +1,426 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", monospace;
+  --brand: #7c5cff;
+  --brand-soft: #9d84ff;
+  --iris: #06b6d4;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  background: #07080f;
+  color: #eef0fb;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: rgba(124, 92, 255, 0.3);
+  color: #fff;
+}
+
+/* scrollbars */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #242838;
+  border-radius: 8px;
+  border: 2px solid #07080f;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #343a52;
+}
+
+/* ---------------------------------------------------------------- */
+/* Click feedback — ripple + press (global, see ClickFX.tsx)         */
+/* ---------------------------------------------------------------- */
+/* ---------------------------------------------------------------- */
+.fx-ripple {
+  position: absolute;
+  border-radius: 9999px;
+  pointer-events: none;
+  transform: scale(0);
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.42) 0%,
+    rgba(255, 255, 255, 0.18) 40%,
+    rgba(255, 255, 255, 0) 72%
+  );
+  mix-blend-mode: screen;
+  animation: fx-ripple 620ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  z-index: 0;
+}
+@keyframes fx-ripple {
+  0% {
+    transform: scale(0);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+/* subtle tactile press for any button-like element */
+button:not(:disabled):active,
+[role="button"]:not([aria-disabled="true"]):active {
+  transform: scale(0.97);
+}
+button,
+[role="button"] {
+  transition: transform 120ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .fx-ripple {
+    display: none;
+  }
+  button:not(:disabled):active,
+  [role="button"]:active {
+    transform: none;
+  }
+}
+
+/* ---------------------------------------------------------------- */
+/* 3D loader fallback animations (see Loader3D.tsx)                  */
+/* ---------------------------------------------------------------- */
+@keyframes fx-pulse {
+  0%,
+  100% {
+    transform: scale(0.7);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+}
+.loader-dots span {
+  animation: loader-dot 1.4s infinite;
+  opacity: 0.3;
+}
+.loader-dots span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.loader-dots span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+@keyframes loader-dot {
+  0%,
+  60%,
+  100% {
+    opacity: 0.3;
+  }
+  30% {
+    opacity: 1;
+  }
+}
+.loader-spin {
+  animation: loader-spin 3.2s linear infinite;
+}
+@keyframes loader-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---------------------------------------------------------------- */
+/* Design-system utilities                                           */
+/* ---------------------------------------------------------------- */
+.glass {
+  background: rgba(17, 19, 31, 0.6);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+}
+.glass-strong {
+  background: rgba(11, 13, 22, 0.82);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+}
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.text-balance {
+  text-wrap: balance;
+}
+.text-pretty {
+  text-wrap: pretty;
+}
+.grid-fade {
+  mask-image: linear-gradient(to bottom, black 60%, transparent);
+}
+
+/* gradient text */
+.text-gradient {
+  background: linear-gradient(135deg, #9d84ff 0%, #7c5cff 45%, #06b6d4 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+.text-gradient-animated {
+  background: linear-gradient(
+    110deg,
+    #9d84ff,
+    #06b6d4,
+    #ec4899,
+    #9d84ff
+  );
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: gradient-x 8s ease infinite;
+}
+@keyframes gradient-x {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* animated gradient border */
+.gradient-border {
+  position: relative;
+  background: #0b0d16;
+  border-radius: 16px;
+}
+.gradient-border::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    rgba(124, 92, 255, 0.6),
+    rgba(6, 182, 212, 0.3),
+    rgba(236, 72, 153, 0.3)
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* grain / noise overlay */
+.noise::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* aurora blobs */
+.aurora-bg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.aurora-blob {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(90px);
+  opacity: 0.6;
+  will-change: transform, opacity;
+}
+
+/* perspective helpers for 3D tilt */
+.perspective {
+  perspective: 1200px;
+}
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+.backface-hidden {
+  backface-visibility: hidden;
+}
+
+/* conic spinner glow */
+.conic-glow {
+  background: conic-gradient(
+    from 0deg,
+    transparent,
+    rgba(124, 92, 255, 0.5),
+    transparent 30%
+  );
+}
+
+/* shimmer skeleton */
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.02) 25%,
+    rgba(255, 255, 255, 0.08) 37%,
+    rgba(255, 255, 255, 0.02) 63%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.6s linear infinite;
+}
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* scroll progress bar */
+.scroll-progress {
+  background: linear-gradient(90deg, #9d84ff, #06b6d4, #ec4899);
+}
+
+/* hover lift */
+.hover-lift {
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.hover-lift:hover {
+  transform: translateY(-4px);
+}
+
+/* animated dotted connector used on landing */
+.flow-dash {
+  stroke-dasharray: 6;
+  animation: dashdraw 0.5s linear infinite;
+}
+
+/* ---- React Flow theme overrides ---- */
+.react-flow {
+  background: #07080f;
+}
+.react-flow__background {
+  background-color: #07080f;
+}
+.react-flow__edge-path {
+  stroke: #343a52;
+  stroke-width: 2;
+}
+.react-flow__edge.selected .react-flow__edge-path,
+.react-flow__edge:hover .react-flow__edge-path {
+  stroke: #7c5cff;
+}
+.react-flow__edge.animated .react-flow__edge-path {
+  stroke: #7c5cff;
+  stroke-dasharray: 6;
+  animation: dashdraw 0.5s linear infinite;
+}
+@keyframes dashdraw {
+  to {
+    stroke-dashoffset: -12;
+  }
+}
+.react-flow__handle {
+  width: 11px;
+  height: 11px;
+  background: #0f111a;
+  border: 2px solid #6b7291;
+  transition: all 0.15s ease;
+}
+.react-flow__handle:hover {
+  border-color: #7c5cff;
+  background: #7c5cff;
+  transform: scale(1.15);
+}
+.react-flow__handle-connecting {
+  border-color: #7c5cff;
+}
+.react-flow__controls {
+  box-shadow: none;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #242838;
+}
+.react-flow__controls-button {
+  background: #131524;
+  border-bottom: 1px solid #242838;
+  color: #aab0c6;
+  width: 30px;
+  height: 30px;
+}
+.react-flow__controls-button:hover {
+  background: #1a1d2e;
+  color: #e7e9f3;
+}
+.react-flow__controls-button svg {
+  fill: currentColor;
+}
+.react-flow__minimap {
+  background: #0f111a;
+  border: 1px solid #242838;
+  border-radius: 10px;
+}
+.react-flow__attribution {
+  display: none;
+}
+.react-flow__node {
+  cursor: grab;
+}
+.react-flow__node.dragging {
+  cursor: grabbing;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

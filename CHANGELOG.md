@@ -2,6 +2,18 @@
 
 All notable changes to FlowForge. This project targets ALGOTHON'26 (`ALG-AUTO-01`).
 
+## [1.4.0] — More ready-to-run templates
+
+### Added
+- Three new one-click starter templates (now **9** total), chosen to showcase nodes the earlier
+  templates didn't exercise:
+  - **Batch Processor (Loop)** — iterate an array with the Loop node, enrich each item in custom
+    JS, and log every processed row.
+  - **Parallel Fetch → Merge** — fan out to two public APIs in parallel and recombine both
+    responses into one object with the Merge node.
+  - **AI Summary Digest** — fetch content, summarize it with the AI node, format a digest via a
+    Template, and email it.
+
 ## [1.3.0] — Pro editor: layout, clipboard & versioning
 
 ### Added

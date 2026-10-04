@@ -164,6 +164,43 @@ design points:
 - **Live run plumbing** — `setNodeStatus`, `applyRunResult`, `appendLog` (bounded to 500),
   `setLastRun`, `clearLogs`.
 - **Deep-linking** — `addNodeOfType(type, pos)` powers both the palette and `/editor?add=<type>`.
+- **Clipboard & bulk ops** — `copyNode` / `cutNode` / `pasteClipboard` use an in-session clipboard
+  (pasted nodes get fresh ids + offset); `applyLayout` and `restoreGraph` are history-aware so
+  every bulk change is undoable.
+
+---
+
+## 7a. Auto-layout (`lib/layout.ts`)
+
+`autoLayoutNodes(nodes, edges)` is a from-scratch layered ("Sugiyama-lite") DAG layout:
+
+1. **Layering** — each node's layer is its longest-path depth from any root (computed in one pass
+   over the topological order).
+2. **Ordering** — within each layer, nodes are sorted by the **barycenter** (mean index) of their
+   parents in the previous layer to reduce edge crossings.
+3. **Placement** — layers flow left → right; each column is vertically centered.
+
+Cyclic graphs (no valid topo order) fall back to a balanced grid. The result is a new node array
+with updated `position`; edges are untouched. Triggered by `Ctrl+L`, the toolbar, or the palette.
+
+---
+
+## 7b. Version snapshots (`lib/snapshots.ts`)
+
+Local, offline version history stored per-workflow in `localStorage` (`flowforge:snapshots:<id>`,
+max 25). `saveSnapshot` captures a deep copy of the current `Workflow`; `restoreGraph` loads one
+back into the store (undoable). The `SnapshotPanel` drawer lists, restores, and deletes them, and
+listens for a `flowforge:snapshots-updated` event to stay in sync. Complements — doesn't replace —
+the server-side file save.
+
+---
+
+## 7c. Partial execution ("Run from here")
+
+`executeWorkflow` accepts `opts.fromNodeId`. When set, it computes the **downstream-reachable
+set** via DFS from that node, seeds the chosen node directly with `initialInput` (as if it were a
+trigger), and marks every node outside the reachable set `skipped`. Status counting is unaffected,
+so partial runs report accurately. Invoked from the Inspector's "Run from here" action.
 
 ---
 
@@ -188,3 +225,7 @@ This fallback is why the deployed demo is fully functional with zero infrastruct
   import, wrapped in a React error boundary with a CSS fallback, so WebGL issues never break the
   page or SSR.
 - **Smooth scroll** via Lenis on `window.__lenis`, disabled under `prefers-reduced-motion`.
+- **Theming** — neutral design tokens (`bg`/`line`/`ink`) resolve through CSS variables set on
+  `<html data-theme>`. `lib/theme.ts` persists the choice in `localStorage` and a pre-paint boot
+  script (`THEME_BOOT_SCRIPT`, injected in `layout.tsx`) applies it before first render to avoid
+  any flash. The React Flow canvas, controls, minimap, and dot grid all read the same variables.

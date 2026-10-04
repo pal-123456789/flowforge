@@ -366,7 +366,7 @@ flowforge/
 │   ├── components/
 │   │   ├── canvas/            # Canvas (React Flow), FlowNode, NodePalette
 │   │   ├── console/           # RunConsole
-│   │   ├── editor/            # Toolbar, EditorShell, ShortcutsHelp, ValidationPanel
+│   │   ├── editor/            # Toolbar, EditorShell, ShortcutsHelp, ValidationPanel, SnapshotPanel, OnboardingTour
 │   │   ├── inspector/         # Inspector config forms
 │   │   ├── runs/              # RunHistory, RunDetail
 │   │   ├── analytics/         # AnalyticsDashboard
@@ -374,10 +374,13 @@ flowforge/
 │   │   └── ui/                # Toast, Icon, JsonView, Loader3D, ClickFX
 │   ├── lib/
 │   │   ├── nodeRegistry.ts    # ← single source of truth (20 node defs)
-│   │   ├── engine.ts          # topological DAG executor
+│   │   ├── engine.ts          # topological DAG executor (+ partial "run from here")
 │   │   ├── executors.ts       # per-node execution logic
 │   │   ├── expression.ts      # {{template}} engine + comparisons
 │   │   ├── graph.ts           # analyze/validate (Kahn's algorithm)
+│   │   ├── layout.ts          # layered DAG auto-layout
+│   │   ├── snapshots.ts       # local version history
+│   │   ├── theme.ts           # dark/light theme + pre-paint boot
 │   │   ├── runLive.ts         # client-side live run wrapper
 │   │   ├── templates.ts       # built-in starter workflows
 │   │   ├── types.ts           # shared TypeScript types
@@ -416,11 +419,12 @@ Live deployment: **https://flowforge-lac-eight.vercel.app**
 
 1. **Land** on `/` — scroll the 3D hero, metrics, and the auto-playing engine demo.
 2. Hit **⌘K**, type "sentiment", and insert the AI node — or open a template from the workspace.
-3. In `/editor`, drag a **Manual Trigger → AI Generate (sentiment) → If/Else → two Logs**. Watch the **validation panel** go green.
-4. Press **Ctrl+Enter**. Nodes light up live; the **run console** streams logs and shows each node's real I/O.
-5. Click **Detail** in the console → land on `/runs/[id]`: the Gantt timeline, per-node input/output, and the branch that was taken.
-6. Open `/analytics` to see success rate, duration, and node-usage charts update.
-7. Note it all ran with **no API keys and no network** — fully offline.
+3. In `/editor`, **double-click the canvas** to quick-add nodes: a **Manual Trigger → AI Generate (sentiment) → If/Else → two Logs**. Hit **Ctrl+L** to auto-tidy the graph. Watch the **validation panel** go green.
+4. Press **Ctrl+Enter**. Nodes light up live; the **run console** streams logs and shows each node's real I/O. Try **"Run from here"** on the If/Else to re-run just the tail.
+5. Open **version snapshots**, capture a checkpoint, make a change, then restore it — all offline.
+6. Click **Detail** in the console → land on `/runs/[id]`: the Gantt timeline, per-node input/output, and the branch that was taken.
+7. Toggle **light/dark theme**, open `/analytics` for success rate, duration, and node-usage charts.
+8. Note it all ran with **no API keys and no network** — fully offline.
 
 ---
 
